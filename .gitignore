@@ -3,3 +3,5 @@ data/
 samples/
 samples_train/
 prgan/
+samples_test/
+
