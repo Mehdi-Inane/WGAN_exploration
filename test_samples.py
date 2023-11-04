@@ -36,12 +36,12 @@ if __name__ == '__main__':
 
     n_samples = 0
     with torch.no_grad():
-        while n_samples<10:
+        while n_samples<50:
             z = torch.randn(args.batch_size, 100)
             x = model(z)
             x = x.reshape(args.batch_size, 28, 28)
             for k in range(x.shape[0]):
-                if n_samples<10:
+                if n_samples<50:
                     torchvision.utils.save_image(x[k:k+1], os.path.join('samples_test', f'{n_samples}.png'))         
                     n_samples += 1
 

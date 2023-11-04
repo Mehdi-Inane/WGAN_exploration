@@ -42,7 +42,7 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=10,
+    parser.add_argument("--epochs", type=int, default=200,
                         help="Number of epochs for training.")
     parser.add_argument("--lr", type=float, default=0.02,
                       help="The learning rate to use for training.")
@@ -97,12 +97,17 @@ if __name__ == '__main__':
     
     n_epoch = args.epochs
     n_generator = 1
-    for epoch in trange(1, n_epoch+1, leave=True):           
+    for epoch in trange(1, n_epoch+1, leave=True): 
+        z = torch.randn(1, 100)
+        x = model(z)
+        x = x.reshape(1, 28, 28)
+        torchvision.utils.save_image(x[k:k+1], os.path.join('samples_per_epoch', f'{epoch}.png'))             
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
             D_train(x, G, D, D_optimizer, criterion)
             if epoch % n_generator == 0:
             	G_train(x, G, D, G_optimizer, criterion)
+        
 
 
         if epoch % 10 == 0:
