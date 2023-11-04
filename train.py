@@ -100,8 +100,8 @@ if __name__ == '__main__':
     z_fixed = torch.randn(1, 100)
     for epoch in trange(1, n_epoch+1, leave=True):
         z = torch.randn(1, 100) 
-        x = model(z)
-        x_fixed = model(z_fixed)
+        x = G(z)
+        x_fixed = G(z_fixed)
         x = x.reshape(1, 28, 28)
         x_fixed = x_fixed.reshape(1, 28, 28)
         torchvision.utils.save_image(x_fixed[k:k+1], os.path.join('samples_per_epoch', f'{epoch}.png'))             
