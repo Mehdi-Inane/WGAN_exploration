@@ -29,13 +29,13 @@ def save_real_samples(train_loader):
 def generate_fake_samples(generator, num_samples):
     n_samples = 0
     with torch.no_grad():
-        while n_samples<10000:
+        while n_samples<num_samples:
             z = torch.randn(args.batch_size, 100).cuda()
             x = generator(z)
             x = x.reshape(args.batch_size, 28, 28)
             for k in range(x.shape[0]):
-                if n_samples<10000:
-                    torchvision.utils.save_image(x[k:k+1], os.path.join('samples', f'{n_samples}.png'))         
+                if n_samples<num_samples:
+                    torchvision.utils.save_image(x[k:k+1], os.path.join('samples_train', f'{n_samples}.png'))         
                     n_samples += 1
 
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     print('Start Training :')
     
     n_epoch = args.epochs
-    n_generator = 3
+    n_generator = 2
     for epoch in trange(1, n_epoch+1, leave=True):           
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
@@ -110,9 +110,14 @@ if __name__ == '__main__':
         if epoch % 20 == 0:
             real_images_path = 'data/MNIST_raw'
             generated_images_path = 'samples'
-            generate_fake_samples(G, 10000)
+            generate_fake_samples(G, 1000)
             fid_value = calculate_fid_given_paths([real_images_path, generated_images_path],batch_size = 128,device = 'cuda',dims = 2048)
             print(f'Epoch {epoch}, FID: {fid_value:.2f}')    
+    save_models(G, D, 'checkpoints')
+    G = G.cpu()
+    D = D.cpu()
+    torch.save({'G_state_dict': G.state_dict(), 'D_state_dict': D.state_dict()}, 'checkpoints_off_GPU/my_models.pth')
+
     print('Training done')
 
         

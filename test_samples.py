@@ -19,10 +19,10 @@ if __name__ == '__main__':
     print('Model Loading...')
     # Model Pipeline
     mnist_dim = 784
-
-    model = Generator(g_output_dim = mnist_dim).cuda()
-    model = load_model(model, 'checkpoints')
-    model = torch.nn.DataParallel(model).cuda()
+    checkpoint = torch.load('checkpoints/my_models.pth')
+    model = Generator(g_output_dim = mnist_dim)
+    model.load_state_dict(checkpoint['G_state_dict'])
+    #model = torch.nn.DataParallel(model).cuda()
     model.eval()
 
     print('Model loaded.')
@@ -30,18 +30,16 @@ if __name__ == '__main__':
 
 
     print('Start Generating')
-    os.makedirs('samples', exist_ok=True)
+    os.makedirs('samples_test', exist_ok=True)
 
     n_samples = 0
     with torch.no_grad():
-        while n_samples<10000:
+        while n_samples<100:
             z = torch.randn(args.batch_size, 100).cuda()
             x = model(z)
             x = x.reshape(args.batch_size, 28, 28)
             for k in range(x.shape[0]):
-                if n_samples<10000:
+                if n_samples<100:
                     torchvision.utils.save_image(x[k:k+1], os.path.join('samples', f'{n_samples}.png'))         
-                    n_samples += args.batch_size
+                    n_samples += 1
 
-
-    

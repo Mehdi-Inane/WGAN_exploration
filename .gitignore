@@ -1,4 +1,6 @@
 venv/
 data/
 samples/
-
+samples_train/
+prgan/
+checkpoints_off_GPU/
