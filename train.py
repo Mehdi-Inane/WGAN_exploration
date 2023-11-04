@@ -97,11 +97,15 @@ if __name__ == '__main__':
     
     n_epoch = args.epochs
     n_generator = 1
-    for epoch in trange(1, n_epoch+1, leave=True): 
-        z = torch.randn(1, 100)
+    z_fixed = torch.randn(1, 100)
+    for epoch in trange(1, n_epoch+1, leave=True):
+        z = torch.randn(1, 100) 
         x = model(z)
+        x_fixed = model(z_fixed)
         x = x.reshape(1, 28, 28)
-        torchvision.utils.save_image(x[k:k+1], os.path.join('samples_per_epoch', f'{epoch}.png'))             
+        x_fixed = x_fixed.reshape(1, 28, 28)
+        torchvision.utils.save_image(x_fixed[k:k+1], os.path.join('samples_per_epoch', f'{epoch}.png'))             
+        torchvision.utils.save_image(x[k:k+1], os.path.join('samples_per_epoch_random', f'{epoch}.png'))             
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
             D_train(x, G, D, D_optimizer, criterion)
