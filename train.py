@@ -104,8 +104,8 @@ if __name__ == '__main__':
         x_fixed = G(z_fixed)
         x = x.reshape(1, 28, 28)
         x_fixed = x_fixed.reshape(1, 28, 28)
-        torchvision.utils.save_image(x_fixed[k:k+1], os.path.join('samples_per_epoch', f'{epoch}.png'))             
-        torchvision.utils.save_image(x[k:k+1], os.path.join('samples_per_epoch_random', f'{epoch}.png'))             
+        torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
+        torchvision.utils.save_image(x[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))             
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
             D_train(x, G, D, D_optimizer, criterion)
