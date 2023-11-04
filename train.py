@@ -42,7 +42,7 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=100,
+    parser.add_argument("--epochs", type=int, default=10,
                         help="Number of epochs for training.")
     parser.add_argument("--lr", type=float, default=0.002,
                       help="The learning rate to use for training.")
@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
         if epoch % 10 == 0:
             save_models(G, D, 'checkpoints')
-        if epoch % 20 == 0:
+        if epoch % 5 == 0:
             real_images_path = 'data/MNIST_raw'
             generated_images_path = 'samples'
             generate_fake_samples(G, 1000)
