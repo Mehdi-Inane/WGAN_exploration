@@ -1,3 +1,4 @@
+import torchvision
 import torch 
 import os
 from tqdm import trange
@@ -30,7 +31,7 @@ def generate_fake_samples(generator, num_samples):
     with torch.no_grad():
         while n_samples<10000:
             z = torch.randn(args.batch_size, 100).cuda()
-            x = model(z)
+            x = generator(z)
             x = x.reshape(args.batch_size, 28, 28)
             for k in range(x.shape[0]):
                 if n_samples<10000:
@@ -41,11 +42,11 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=200,
+    parser.add_argument("--epochs", type=int, default=100,
                         help="Number of epochs for training.")
     parser.add_argument("--lr", type=float, default=0.002,
                       help="The learning rate to use for training.")
-    parser.add_argument("--batch_size", type=int, default=64, 
+    parser.add_argument("--batch_size", type=int, default=128, 
                         help="Size of mini-batches for SGD")
 
     args = parser.parse_args()
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     print('Start Training :')
     
     n_epoch = args.epochs
-    n_generator = 5
+    n_generator = 3
     for epoch in trange(1, n_epoch+1, leave=True):           
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
@@ -106,10 +107,11 @@ if __name__ == '__main__':
 
         if epoch % 10 == 0:
             save_models(G, D, 'checkpoints')
-        if epoch % 30 == 0:
+        if epoch % 20 == 0:
             real_images_path = 'data/MNIST_raw'
             generated_images_path = 'samples'
-            fid_value = calculate_fid_given_paths([real_images_path, generated_images_path],batch_size = 64,device = 'cuda',dims = 2048)
+            generate_fake_samples(G, 10000)
+            fid_value = calculate_fid_given_paths([real_images_path, generated_images_path],batch_size = 128,device = 'cuda',dims = 2048)
             print(f'Epoch {epoch}, FID: {fid_value:.2f}')    
     print('Training done')
 

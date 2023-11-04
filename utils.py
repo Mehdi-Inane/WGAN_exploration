@@ -12,22 +12,21 @@ def D_train(x, G, D, D_optimizer, criterion):
     x_real, y_real = x_real.cuda(), y_real.cuda()
 
     D_output = D(x_real)
-    #D_real_loss = criterion(D_output, y_real)
-    D_real_loss = torch.mean(D_output)
+    D_real_loss = criterion(D_output, y_real)
+    #D_real_loss = torch.mean(D_output)
     D_real_score = D_output
 
     # train discriminator on facke
     z = torch.randn(x.shape[0], 100).cuda()
     x_fake, y_fake = G(z), torch.zeros(x.shape[0], 1).cuda()
-
     D_output =  D(x_fake)
     
-    #D_fake_loss = criterion(D_output, y_fake)
-    D_fake_loss = torch.mean(D_output)
+    D_fake_loss = criterion(D_output, y_fake)
+    #D_fake_loss = torch.mean(D_output)
     D_fake_score = D_output
-    grad_penalty = gradient_penalty(D,x_real,x_fake,device='cuda')
+    #grad_penalty = gradient_penalty(D,x_real,x_fake,device='cuda')
     # gradient backprop & optimize ONLY D's parameters
-    D_loss = D_fake_loss - D_real_loss + grad_penalty*10
+    D_loss = D_fake_loss + D_real_loss #+ grad_penalty*10
     D_loss.backward()
     D_optimizer.step()
         
@@ -43,8 +42,8 @@ def G_train(x, G, D, G_optimizer, criterion):
                  
     G_output = G(z)
     D_output = D(G_output)
-    #G_loss = criterion(D_output, y)
-    G_loss = -torch.mean(D_output)
+    G_loss = criterion(D_output, y)
+    #G_loss = -torch.mean(D_output)
 
     # gradient backprop & optimize ONLY G's parameters
     G_loss.backward()
