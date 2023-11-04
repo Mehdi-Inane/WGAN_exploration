@@ -31,6 +31,7 @@ if __name__ == '__main__':
 
     print('Start Generating')
     os.makedirs('samples_test', exist_ok=True)
+    os.makedirs('samples_train', exist_ok=True)
 
     n_samples = 0
     with torch.no_grad():
