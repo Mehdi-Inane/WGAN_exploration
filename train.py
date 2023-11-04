@@ -44,7 +44,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
     parser.add_argument("--epochs", type=int, default=10,
                         help="Number of epochs for training.")
-    parser.add_argument("--lr", type=float, default=0.002,
+    parser.add_argument("--lr", type=float, default=0.02,
                       help="The learning rate to use for training.")
     parser.add_argument("--batch_size", type=int, default=128, 
                         help="Size of mini-batches for SGD")
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     print('Start Training :')
     
     n_epoch = args.epochs
-    n_generator = 2
+    n_generator = 1
     for epoch in trange(1, n_epoch+1, leave=True):           
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
