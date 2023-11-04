@@ -1,6 +1,11 @@
 venv/
 data/
 samples/
+<<<<<<< HEAD
 samples_train/
 prgan/
 checkpoints_off_GPU/
+=======
+prgan/
+
+>>>>>>> 1a685c85a2fba21ced629841bec8541f22a498ac
