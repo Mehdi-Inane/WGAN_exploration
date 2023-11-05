@@ -7,6 +7,8 @@ def D_train(x, G, D, D_optimizer, criterion):
     #=======================Train the discriminator=======================#
     D.zero_grad()
 
+    for p in D.parameters():
+        p.data.clamp_(-0.01, 0.01)
     # train discriminator on real
     x_real, y_real = x, torch.ones(x.shape[0], 1)
     x_real, y_real = x_real.cuda(), y_real.cuda()
@@ -27,7 +29,7 @@ def D_train(x, G, D, D_optimizer, criterion):
     grad_penalty = gradient_penalty(D,x_real,x_fake,device='cuda')
     # gradient backprop & optimize ONLY D's parameters
     #D_loss = D_fake_loss + D_real_loss
-    D_loss = D_fake_loss - D_real_loss + grad_penalty*2
+    D_loss = D_fake_loss - D_real_loss# + grad_penalty*10
     D_loss.backward()
     D_optimizer.step()
         

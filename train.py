@@ -45,9 +45,9 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=50,
+    parser.add_argument("--epochs", type=int, default=69,
                         help="Number of epochs for training.")
-    parser.add_argument("--lr", type=float, default=0.002,
+    parser.add_argument("--lr", type=float, default=0.00005,
                       help="The learning rate to use for training.")
     parser.add_argument("--batch_size", type=int, default=128, 
                         help="Size of mini-batches for SGD")
@@ -93,26 +93,39 @@ if __name__ == '__main__':
     criterion = nn.BCELoss()
 
     # define optimizers
-    G_optimizer = optim.Adam(G.parameters(), lr = args.lr)
-    D_optimizer = optim.Adam(D.parameters(), lr = args.lr)
+    CP = True
+    if CP:
+        G_optimizer = torch.optim.RMSprop(self.G.parameters(), lr=0.00005)
+        D_optimizer = torch.optim.RMSprop(self.D.parameters(), lr=0.00005)
+    else:
+        G_optimizer = optim.Adam(G.parameters(), lr = args.lr)
+        D_optimizer = optim.Adam(D.parameters(), lr = args.lr)
 
     print('Start Training :')
     
     n_epoch = args.epochs
     fid_values = []
-    n_generator = 2
+    D_loss = []
+    G_loss = []
+    n_generator = 3
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
     for epoch in trange(1, n_epoch+1, leave=True): 
+        dl= 0
+        gl= 0
+        bpe = 0
         for batch_idx, (x, _) in enumerate(train_loader):
+            bpe+=1
             x = x.view(-1, mnist_dim)
-            D_train(x, G, D, D_optimizer, criterion)
+            dl += D_train(x, G, D, D_optimizer, criterion)
             if epoch % n_generator == 0:
-                G_train(x, G, D, G_optimizer, criterion)
+                gl += G_train(x, G, D, G_optimizer, criterion)
+        if epoch % n_generator == 0:
+            G_loss.append(gl/bpe)
+        D_loss.append(dl/bpe)
 
-
-        if epoch % 2 == 0:
+        if epoch % n_generator == 0:
             z_r = torch.randn(1, 100) 
             x_r = G(z_r)
             x_fixed = G(z_fixed)
@@ -120,9 +133,10 @@ if __name__ == '__main__':
             x_fixed = x_fixed.reshape(1, 28, 28)
             torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
             torchvision.utils.save_image(x_r[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))
+        
         if epoch % 10 == 0:
             save_models(G, D, 'checkpoints')
-        if epoch % 5 == 0:
+        if epoch % 2*n_generator == 0:
             real_images_path = 'data/MNIST_raw'
             generated_images_path = 'samples'
             generate_fake_samples(G, 1000)
@@ -143,6 +157,19 @@ if __name__ == '__main__':
     ax.set_title('FID Over Epochs')
     plt.savefig('fid_plot.png')
 
+    fig, ax = plt.subplots()
+    ax.plot(G_loss, marker='o', linestyle='-')
+    ax.set_xlabel('Epoch*3')
+    ax.set_ylabel('Generator Loss')
+    ax.set_title('Generator Loss over training')
+    plt.savefig('genloss.png')
+
+    fig, ax = plt.subplots()
+    ax.plot(D_loss, marker='o', linestyle='-')
+    ax.set_xlabel('Epoch')
+    ax.set_ylabel('Discriminator Loss')
+    ax.set_title('Discriminator Loss over training')
+    plt.savefig('disloss.png')
 
     print('Training done')
 
