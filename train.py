@@ -105,14 +105,6 @@ if __name__ == '__main__':
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
     for epoch in trange(1, n_epoch+1, leave=True): 
-        if epoch % 3 == 0:
-            z_r = torch.randn(1, 100) 
-            x_r = G(z_r)
-            x_fixed = G(z_fixed)
-            x_r = x_r.reshape(1, 28, 28)
-            x_fixed = x_fixed.reshape(1, 28, 28)
-            torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
-            torchvision.utils.save_image(x_r[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
             D_train(x, G, D, D_optimizer, criterion)
@@ -120,6 +112,14 @@ if __name__ == '__main__':
                 G_train(x, G, D, G_optimizer, criterion)
 
 
+        if epoch % 2 == 0:
+            z_r = torch.randn(1, 100) 
+            x_r = G(z_r)
+            x_fixed = G(z_fixed)
+            x_r = x_r.reshape(1, 28, 28)
+            x_fixed = x_fixed.reshape(1, 28, 28)
+            torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
+            torchvision.utils.save_image(x_r[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))
         if epoch % 10 == 0:
             save_models(G, D, 'checkpoints')
         if epoch % 5 == 0:
