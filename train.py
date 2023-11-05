@@ -33,7 +33,7 @@ def generate_fake_samples(generator, num_samples):
     n_samples = 0
     with torch.no_grad():
         while n_samples<num_samples:
-            z = torch.randn(args.batch_size, 100).cuda()
+            z = torch.randn(args.batch_size, 50).cuda()
             x = generator(z)
             x = x.reshape(args.batch_size, 28, 28)
             for k in range(x.shape[0]):
@@ -102,20 +102,22 @@ if __name__ == '__main__':
     fid_values = []
     n_generator = 3
     z_fixed = torch.randn(1, 100)
-    for epoch in trange(1, n_epoch+1, leave=True):       
+    os.makedirs('samples_per_epoch', exist_ok=True)
+    os.makedirs('samples_per_epoch_random', exist_ok=True)
+    for epoch in trange(1, n_epoch+1, leave=True): 
+        if epoch % 2 == 0:
+        z_r = torch.randn(1, 100) 
+        x_r = G(z_r)
+        x_fixed = G(z_fixed)
+        x_r = x_r.reshape(1, 28, 28)
+        x_fixed = x_fixed.reshape(1, 28, 28)
+        torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
+        torchvision.utils.save_image(x_r[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
             D_train(x, G, D, D_optimizer, criterion)
             if epoch % n_generator == 0:
                 G_train(x, G, D, G_optimizer, criterion)
-                z_r = torch.randn(1, 100) 
-                x_r = G(z_r)
-                x_fixed = G(z_fixed)
-                x_r = x_r.reshape(1, 28, 28)
-                x_fixed = x_fixed.reshape(1, 28, 28)
-                torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
-                torchvision.utils.save_image(x_r[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))      
-        
 
 
         if epoch % 10 == 0:
@@ -131,6 +133,7 @@ if __name__ == '__main__':
     save_models(G, D, 'checkpoints')
     G = G.cpu()
     D = D.cpu()
+    os.makedirs('checkpoints_off_GPU', exist_ok=True)
     torch.save({'G_state_dict': G.state_dict(), 'D_state_dict': D.state_dict()}, 'checkpoints_off_GPU/my_models.pth')
 
     fig, ax = plt.subplots()
