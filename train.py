@@ -95,8 +95,8 @@ if __name__ == '__main__':
     # define optimizers
     CP = True
     if CP:
-        G_optimizer = torch.optim.RMSprop(self.G.parameters(), lr=0.00005)
-        D_optimizer = torch.optim.RMSprop(self.D.parameters(), lr=0.00005)
+        G_optimizer = optim.RMSprop(G.parameters(), lr=0.00005)
+        D_optimizer = optim.RMSprop(D.parameters(), lr=0.00005)
     else:
         G_optimizer = optim.Adam(G.parameters(), lr = args.lr)
         D_optimizer = optim.Adam(D.parameters(), lr = args.lr)
