@@ -5,3 +5,4 @@ tqdm==4.64.1
 torch==2.0.1
 torchvision==0.15.1
 pytorch-fid==0.3.0
+matplotlib==3.8.1
