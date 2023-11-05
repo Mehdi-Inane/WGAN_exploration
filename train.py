@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
     parser.add_argument("--epochs", type=int, default=100,
                         help="Number of epochs for training.")
-    parser.add_argument("--lr", type=float, default=0.02,
+    parser.add_argument("--lr", type=float, default=0.002,
                       help="The learning rate to use for training.")
     parser.add_argument("--batch_size", type=int, default=128, 
                         help="Size of mini-batches for SGD")
@@ -102,19 +102,19 @@ if __name__ == '__main__':
     fid_values = []
     n_generator = 3
     z_fixed = torch.randn(1, 100)
-    for epoch in trange(1, n_epoch+1, leave=True):
-        z = torch.randn(1, 100) 
-        x = G(z)
-        x_fixed = G(z_fixed)
-        x = x.reshape(1, 28, 28)
-        x_fixed = x_fixed.reshape(1, 28, 28)
-        torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
-        torchvision.utils.save_image(x[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))             
+    for epoch in trange(1, n_epoch+1, leave=True):       
         for batch_idx, (x, _) in enumerate(train_loader):
             x = x.view(-1, mnist_dim)
             D_train(x, G, D, D_optimizer, criterion)
             if epoch % n_generator == 0:
             	G_train(x, G, D, G_optimizer, criterion)
+                z = torch.randn(1, 100) 
+                x = G(z)
+                x_fixed = G(z_fixed)
+                x = x.reshape(1, 28, 28)
+                x_fixed = x_fixed.reshape(1, 28, 28)
+                torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
+                torchvision.utils.save_image(x[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))      
         
 
 
