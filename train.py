@@ -107,7 +107,7 @@ if __name__ == '__main__':
             x = x.view(-1, mnist_dim)
             D_train(x, G, D, D_optimizer, criterion)
             if epoch % n_generator == 0:
-            	G_train(x, G, D, G_optimizer, criterion)
+                G_train(x, G, D, G_optimizer, criterion)
                 z_r = torch.randn(1, 100) 
                 x_r = G(z_r)
                 x_fixed = G(z_fixed)
