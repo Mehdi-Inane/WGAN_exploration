@@ -33,7 +33,7 @@ def generate_fake_samples(generator, num_samples):
     n_samples = 0
     with torch.no_grad():
         while n_samples<num_samples:
-            z = torch.randn(args.batch_size, 50).cuda()
+            z = torch.randn(args.batch_size, 100).cuda()
             x = generator(z)
             x = x.reshape(args.batch_size, 28, 28)
             for k in range(x.shape[0]):
@@ -45,7 +45,7 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=100,
+    parser.add_argument("--epochs", type=int, default=50,
                         help="Number of epochs for training.")
     parser.add_argument("--lr", type=float, default=0.002,
                       help="The learning rate to use for training.")
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     
     n_epoch = args.epochs
     fid_values = []
-    n_generator = 3
+    n_generator = 2
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
