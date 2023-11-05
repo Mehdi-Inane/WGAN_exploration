@@ -108,13 +108,13 @@ if __name__ == '__main__':
             D_train(x, G, D, D_optimizer, criterion)
             if epoch % n_generator == 0:
             	G_train(x, G, D, G_optimizer, criterion)
-                z = torch.randn(1, 100) 
-                x = G(z)
+                z_r = torch.randn(1, 100) 
+                x_r = G(z_r)
                 x_fixed = G(z_fixed)
-                x = x.reshape(1, 28, 28)
+                x_r = x_r.reshape(1, 28, 28)
                 x_fixed = x_fixed.reshape(1, 28, 28)
                 torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
-                torchvision.utils.save_image(x[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))      
+                torchvision.utils.save_image(x_r[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))      
         
 
 
