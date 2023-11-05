@@ -13,6 +13,9 @@ from utils import D_train, G_train, save_models
 import os
 from torchvision.utils import save_image
 
+import matplotlib.pyplot as plt
+
+
 def save_real_samples(train_loader):
     real_images_dir = 'data/MNIST_raw'
     os.makedirs(real_images_dir, exist_ok=True)
@@ -42,7 +45,7 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=200,
+    parser.add_argument("--epochs", type=int, default=100,
                         help="Number of epochs for training.")
     parser.add_argument("--lr", type=float, default=0.02,
                       help="The learning rate to use for training.")
@@ -96,7 +99,8 @@ if __name__ == '__main__':
     print('Start Training :')
     
     n_epoch = args.epochs
-    n_generator = 1
+    fid_values = []
+    n_generator = 3
     z_fixed = torch.randn(1, 100)
     for epoch in trange(1, n_epoch+1, leave=True):
         z = torch.randn(1, 100) 
@@ -121,11 +125,21 @@ if __name__ == '__main__':
             generated_images_path = 'samples'
             generate_fake_samples(G, 1000)
             fid_value = calculate_fid_given_paths([real_images_path, generated_images_path],batch_size = 128,device = 'cuda',dims = 2048)
-            print(f'Epoch {epoch}, FID: {fid_value:.2f}')    
+            print(f'Epoch {epoch}, FID: {fid_value:.2f}')
+            fid_values.append(fid_value)
+
     save_models(G, D, 'checkpoints')
     G = G.cpu()
     D = D.cpu()
     torch.save({'G_state_dict': G.state_dict(), 'D_state_dict': D.state_dict()}, 'checkpoints_off_GPU/my_models.pth')
+
+    fig, ax = plt.subplots()
+    ax.plot(fid_values, marker='o', linestyle='-')
+    ax.set_xlabel('Epoch')
+    ax.set_ylabel('FID')
+    ax.set_title('FID Over Epochs')
+    plt.savefig('fid_plot.png')
+
 
     print('Training done')
 
