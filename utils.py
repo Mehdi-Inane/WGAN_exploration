@@ -26,7 +26,7 @@ def D_train(x, G, D, D_optimizer, criterion):
     #D_fake_loss = criterion(D_output, y_fake)
     D_fake_loss = torch.mean(D_output)
     D_fake_score = D_output
-    #grad_penalty = gradient_penalty(D,x_real,x_fake,device='cuda')
+    grad_penalty = gradient_penalty(D,x_real,x_fake,device='cuda')
     # gradient backprop & optimize ONLY D's parameters
     #D_loss = D_fake_loss + D_real_loss
     D_loss = D_fake_loss - D_real_loss + grad_penalty*10
