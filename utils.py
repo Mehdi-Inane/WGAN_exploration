@@ -46,7 +46,7 @@ def G_train(x, G, D, G_optimizer, criterion):
     G_output = G(z)
     D_output = D(G_output)
     #G_loss = criterion(D_output, y)
-    G_loss = torch.mean(D_output)
+    G_loss = -torch.mean(D_output)
 
     # gradient backprop & optimize ONLY G's parameters
     G_loss.backward()
