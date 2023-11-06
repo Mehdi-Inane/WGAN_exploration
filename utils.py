@@ -8,7 +8,7 @@ def D_train(x, G, D, D_optimizer, criterion):
     D.zero_grad()
 
     for p in D.parameters():
-        p.data.clamp_(-0.01, 0.01)
+        p.data.clamp_(-0.1, 0.1)
     # train discriminator on real
     x_real, y_real = x, torch.ones(x.shape[0], 1)
     x_real, y_real = x_real.cuda(), y_real.cuda()
@@ -46,7 +46,7 @@ def G_train(x, G, D, G_optimizer, criterion):
     G_output = G(z)
     D_output = D(G_output)
     #G_loss = criterion(D_output, y)
-    G_loss = -torch.mean(D_output)
+    G_loss = torch.mean(D_output)
 
     # gradient backprop & optimize ONLY G's parameters
     G_loss.backward()

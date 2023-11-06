@@ -32,13 +32,13 @@ class Discriminator(nn.Module):
     # forward method
     def forward(self, x):
         x = self.fc1(x)
-        x = self.bn1(x.view(-1, self.fc1.out_features))
+        #x = self.bn1(x.view(-1, self.fc1.out_features))
         x = F.leaky_relu(x, 0.2)
         x = self.fc2(x)
-        x = self.bn2(x)
+        #x = self.bn2(x)
         x = F.leaky_relu(x, 0.2)
         x = self.fc3(x)
-        x = self.bn3(x)
+        #x = self.bn3(x)
         x = F.leaky_relu(x, 0.2)
         x = self.dropout(x)
         return torch.sigmoid(self.fc4(x))
