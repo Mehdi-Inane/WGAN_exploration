@@ -41,4 +41,4 @@ class Discriminator(nn.Module):
         #x = self.bn3(x)
         x = F.leaky_relu(x, 0.2)
         x = self.dropout(x)
-        return torch.sigmoid(self.fc4(x))
+        return self.fc4(x)
