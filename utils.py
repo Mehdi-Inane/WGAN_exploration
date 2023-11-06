@@ -8,7 +8,7 @@ def D_train(x, G, D, D_optimizer, criterion):
     D.zero_grad()
 
     for p in D.parameters():
-        p.data.clamp_(-0.02, 0.02)
+        p.data.clamp_(-0.01, 0.01)
     # train discriminator on real
     x_real, y_real = x, torch.ones(x.shape[0], 1)
     x_real, y_real = x_real.cuda(), y_real.cuda()
