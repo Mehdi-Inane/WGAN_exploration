@@ -45,9 +45,9 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=100,
+    parser.add_argument("--epochs", type=int, default=50,
                         help="Number of epochs for training.")
-    parser.add_argument("--lr", type=float, default=0.00005,
+    parser.add_argument("--lr", type=float, default=1e-4,
                       help="The learning rate to use for training.")
     parser.add_argument("--batch_size", type=int, default=128, 
                         help="Size of mini-batches for SGD")
@@ -93,13 +93,13 @@ if __name__ == '__main__':
     criterion = nn.BCELoss()
 
     # define optimizers
-    CP = True
+    CP = False
     if CP:
         G_optimizer = optim.RMSprop(G.parameters(), lr=5e-5)
         D_optimizer = optim.RMSprop(D.parameters(), lr=5e-5)
     else:
-        G_optimizer = optim.Adam(G.parameters(), lr = args.lr)
-        D_optimizer = optim.Adam(D.parameters(), lr = args.lr)
+        G_optimizer = optim.Adam(G.parameters(), lr = args.lr, betas=(0.5, 0.999))
+        D_optimizer = optim.Adam(D.parameters(), lr = args.lr, betas=(0.5, 0.999))
 
     print('Start Training :')
     
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     fid_values = []
     D_loss = []
     G_loss = []
-    n_generator = 5
+    n_generator = 2
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         if epoch % 2*n_generator == 0:
             real_images_path = 'data/MNIST_raw'
             generated_images_path = 'samples_train'
-            generate_fake_samples(G, 1000)
+            generate_fake_samples(G, 10000)
             fid_value = calculate_fid_given_paths([real_images_path, generated_images_path],batch_size = 128,device = 'cuda',dims = 2048)
             print(f'Epoch {epoch}, FID: {fid_value:.2f}')
             fid_values.append(fid_value)
