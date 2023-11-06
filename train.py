@@ -45,7 +45,7 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=50,
+    parser.add_argument("--epochs", type=int, default=100,
                         help="Number of epochs for training.")
     parser.add_argument("--lr", type=float, default=1e-4,
                       help="The learning rate to use for training.")
