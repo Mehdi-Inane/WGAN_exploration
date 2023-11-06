@@ -138,7 +138,7 @@ if __name__ == '__main__':
             save_models(G, D, 'checkpoints')
         if epoch % 2*n_generator == 0:
             real_images_path = 'data/MNIST_raw'
-            generated_images_path = 'samples'
+            generated_images_path = 'samples_train'
             generate_fake_samples(G, 1000)
             fid_value = calculate_fid_given_paths([real_images_path, generated_images_path],batch_size = 128,device = 'cuda',dims = 2048)
             print(f'Epoch {epoch}, FID: {fid_value:.2f}')
