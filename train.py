@@ -45,7 +45,7 @@ def generate_fake_samples(generator, num_samples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
-    parser.add_argument("--epochs", type=int, default=100,
+    parser.add_argument("--epochs", type=int, default=200,
                         help="Number of epochs for training.")
     parser.add_argument("--lr", type=float, default=1e-4,
                       help="The learning rate to use for training.")
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     fid_values = []
     D_loss = []
     G_loss = []
-    n_generator = 5
+    n_generator = 3
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
