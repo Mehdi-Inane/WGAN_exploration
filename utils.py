@@ -1,6 +1,6 @@
 import torch
 import os
-
+from diff_augment import *
 
 
 def D_train(x, G, D, D_optimizer, criterion):
@@ -8,9 +8,11 @@ def D_train(x, G, D, D_optimizer, criterion):
     D.zero_grad()
 
     # train discriminator on real
-    x_real, y_real = x, torch.ones(x.shape[0], 1)
+    policies = 'translation,cutout'
+    transformed_images = DiffAugment(x.view(-1, 1, 28, 28),policies,False)
+    transformed_flattened_images = transformed_images.view(-1,784)
+    x_real, y_real = transformed_flattened_images, torch.ones(transformed_flattened_images.shape[0], 1)
     x_real, y_real = x_real.cuda(), y_real.cuda()
-
     D_output = D(x_real)
     D_real_loss = criterion(D_output, y_real)
     #D_real_loss = torch.mean(D_output)
@@ -18,9 +20,12 @@ def D_train(x, G, D, D_optimizer, criterion):
 
     # train discriminator on facke
     z = torch.randn(x.shape[0], 100).cuda()
-    x_fake, y_fake = G(z), torch.zeros(x.shape[0], 1).cuda()
+    x_fake = G(z)
+    transformed_images = DiffAugment(x_fake.view(-1, 1, 28, 28),policies,False)
+    transformed_flattened_images = transformed_images.view(-1,784)
+    x_fake = transformed_images.view(-1,784).cuda()
+    y_fake = torch.zeros(x_fake.shape[0], 1).cuda()
     D_output =  D(x_fake)
-    
     D_fake_loss = criterion(D_output, y_fake)
     #D_fake_loss = torch.mean(D_output)
     D_fake_score = D_output
@@ -36,11 +41,13 @@ def D_train(x, G, D, D_optimizer, criterion):
 def G_train(x, G, D, G_optimizer, criterion):
     #=======================Train the generator=======================#
     G.zero_grad()
-
+    policies = 'translation,cutout'
     z = torch.randn(x.shape[0], 100).cuda()
-    y = torch.ones(x.shape[0], 1).cuda()
-                 
     G_output = G(z)
+    transformed_images = DiffAugment(G_output.view(-1, 1, 28, 28),policies,False)
+    transformed_flattened_images = transformed_images.view(-1,784)
+    G_output = transformed_images.view(-1,784).cuda()
+    y = torch.ones(G_output.shape[0], 1).cuda()
     D_output = D(G_output)
     G_loss = criterion(D_output, y)
     #G_loss = -torch.mean(D_output)
