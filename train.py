@@ -123,7 +123,7 @@ if __name__ == '__main__':
                 gl += G_train(x, G, D, G_optimizer, criterion)
         if epoch % n_generator == 0:
             G_loss.append(gl/bpe)
-	    print(f'Epoch {epoch}, G Loss {gl/bpe:.2f}, D Loss {dl/bpe:.2f}')
+            print(f'Epoch {epoch}, G Loss {gl/bpe:.2f}, D Loss {dl/bpe:.2f}')
         D_loss.append(dl/bpe)
 
         if epoch % n_generator == 0:
