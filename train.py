@@ -123,6 +123,7 @@ if __name__ == '__main__':
                 gl += G_train(x, G, D, G_optimizer, criterion)
         if epoch % n_generator == 0:
             G_loss.append(gl/bpe)
+	    print(f'Epoch {epoch}, G Loss {gl/bpe:.2f}, D Loss {dl/bpe:.2f}')
         D_loss.append(dl/bpe)
 
         if epoch % n_generator == 0:
@@ -134,9 +135,9 @@ if __name__ == '__main__':
             torchvision.utils.save_image(x_fixed[0], os.path.join('samples_per_epoch', f'{epoch}.png'))             
             torchvision.utils.save_image(x_r[0], os.path.join('samples_per_epoch_random', f'{epoch}.png'))
         
-        if epoch % 10 == 0:
+        if epoch % 20 == 0:
             save_models(G, D, 'checkpoints')
-        if epoch % 10  == 0:
+        if epoch % 20  == 0:
             real_images_path = 'data/MNIST_raw'
             generated_images_path = 'samples_train'
             generate_fake_samples(G, 10000)
