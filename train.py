@@ -107,11 +107,11 @@ if __name__ == '__main__':
     fid_values = []
     D_loss = []
     G_loss = []
-    n_generator = 5
+    n_generator = 3
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
-    for epoch in trange(1, n_epoch+1, leave=True): 
+    for epoch in range(1, n_epoch+1): 
         dl= 0
         gl= 0
         bpe = 0
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         
         if epoch % 10 == 0:
             save_models(G, D, 'checkpoints')
-        if epoch % 2*n_generator == 0:
+        if epoch % 10  == 0:
             real_images_path = 'data/MNIST_raw'
             generated_images_path = 'samples_train'
             generate_fake_samples(G, 10000)
