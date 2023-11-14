@@ -68,8 +68,8 @@ def load_model(G, folder):
 
 
 def gradient_penalty(model,real_images,fake_images,device):
-    alpha = torch.rand((real_images.size(0), 1, 1, 1), device=device)
-    alpha = alpha.expand(self.batch_size, real_images.size(1), real_images.size(2), real_images.size(3))
+    alpha = torch.rand((real_images.size(0), 1), device=device)
+    #alpha = alpha.expand(real_images.size(0), real_images.size(1), real_images.size(2), real_images.size(3))
     # Get random interpolation between real and fake data
     interpolates = (alpha * real_images + ((1 - alpha) * fake_images)).requires_grad_(True)
 
