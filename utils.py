@@ -1,6 +1,6 @@
 import torch
 import os
-
+import sys
 
 
 def D_train(x, G, D, D_optimizer, criterion):
@@ -72,7 +72,6 @@ def gradient_penalty(model,real_images,fake_images,device):
     #alpha = alpha.expand(real_images.size(0), real_images.size(1), real_images.size(2), real_images.size(3))
     # Get random interpolation between real and fake data
     interpolates = (alpha * real_images + ((1 - alpha) * fake_images)).requires_grad_(True)
-
     model_interpolates = model(interpolates)
     grad_outputs = torch.ones(model_interpolates.size(), device=device, requires_grad=False)
     # Get gradient w.r.t. interpolates
