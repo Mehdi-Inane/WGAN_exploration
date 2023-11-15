@@ -24,9 +24,9 @@ class Discriminator(nn.Module):
     def __init__(self,img_size):
         super(Discriminator, self).__init__()
         
-        def discriminator_block(in_filters, out_filters, bn=True):
+        def discriminator_block(in_filters, out_filters, bn=False):
             """Returns layers of each discriminator block"""
-            block = [nn.Conv2d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout2d(0.3)]
+            block = [nn.Conv2d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True)]
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, 0.8))
             return block
@@ -43,7 +43,7 @@ class Discriminator(nn.Module):
         ds_size = mnist_dim // 2 **4
 
         # Output layers
-        self.adv_layer = nn.Sequential(nn.Linear(512 * ds_size ** 2, 1), nn.Sigmoid())
+        self.adv_layer = nn.Sequential(nn.Linear(512 * ds_size ** 2, 1))
 
     def forward(self, img):
         img = img.view(-1, 1, mnist_dim, mnist_dim)

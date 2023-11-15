@@ -47,9 +47,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
     parser.add_argument("--epochs", type=int, default=200,
                         help="Number of epochs for training.")
-    parser.add_argument("--lr", type=float, default=1e-4,
+    parser.add_argument("--lr", type=float, default=5e-4,
                       help="The learning rate to use for training.")
-    parser.add_argument("--batch_size", type=int, default=128, 
+    parser.add_argument("--batch_size", type=int, default=64, 
                         help="Size of mini-batches for SGD")
 
     args = parser.parse_args()
@@ -107,11 +107,11 @@ if __name__ == '__main__':
     fid_values = []
     D_loss = []
     G_loss = []
-    n_generator = 5
+    n_generator = 1
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
-    for epoch in trange(1, n_epoch+1, leave=True): 
+    for epoch in range(1, n_epoch+1): 
         dl= 0
         gl= 0
         bpe = 0
