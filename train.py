@@ -41,15 +41,26 @@ def generate_fake_samples(generator, num_samples):
                     torchvision.utils.save_image(x[k:k+1], os.path.join('samples_train', f'{n_samples}.png'))         
                     n_samples += 1
 
+def compute_norm_product(layer):
+    u, s, v = torch.svd(layer)
+    # Spectral norm is the maximum singular value
+    spectral_norm = s[0].item()
+    return spectral_norm
 
+def compute_lipschitz(D):
+        norm_products = 1.0
+        for name,layer in D.named_parameters():
+            if 'weight' in name:
+                norm_products *= compute_norm_product(layer.data)
+        return norm_products
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train Normalizing Flow.')
     parser.add_argument("--epochs", type=int, default=200,
                         help="Number of epochs for training.")
-    parser.add_argument("--lr", type=float, default=1e-4,
+    parser.add_argument("--lr", type=float, default=2e-4,
                       help="The learning rate to use for training.")
-    parser.add_argument("--batch_size", type=int, default=128, 
+    parser.add_argument("--batch_size", type=int, default=64, 
                         help="Size of mini-batches for SGD")
 
     args = parser.parse_args()
@@ -107,6 +118,7 @@ if __name__ == '__main__':
     fid_values = []
     D_loss = []
     G_loss = []
+    KK = []
     n_generator = 1
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
@@ -125,6 +137,7 @@ if __name__ == '__main__':
             G_loss.append(gl/bpe)
             print(f'Epoch {epoch}, G Loss {gl/bpe:.2f}, D Loss {dl/bpe:.2f}')
         D_loss.append(dl/bpe)
+        KK.append(compute_lipschitz(D))
 
         if epoch % n_generator == 0:
             z_r = torch.randn(1, 100) 
@@ -159,8 +172,15 @@ if __name__ == '__main__':
     plt.savefig('fid_plot.png')
 
     fig, ax = plt.subplots()
+    ax.plot(KK, marker='o', linestyle='-')
+    ax.set_xlabel('Epoch')
+    ax.set_ylabel('Lipschitz cst ub')
+    ax.set_title('Lipschitz constant Over Epochs')
+    plt.savefig('Lip_plot.png')
+
+    fig, ax = plt.subplots()
     ax.plot(G_loss, marker='o', linestyle='-')
-    ax.set_xlabel('Epoch*3')
+    ax.set_xlabel('Epoch')
     ax.set_ylabel('Generator Loss')
     ax.set_title('Generator Loss over training')
     plt.savefig('genloss.png')

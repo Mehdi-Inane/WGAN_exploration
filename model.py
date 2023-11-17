@@ -25,9 +25,9 @@ class Discriminator(nn.Module):
         self.fc2 = nn.Linear(self.fc1.out_features, self.fc1.out_features//2)
         self.fc3 = nn.Linear(self.fc2.out_features, self.fc2.out_features//2)
         self.fc4 = nn.Linear(self.fc3.out_features, 1)
-        self.dropout1 = nn.Dropout(0.1)
-        self.dropout2 = nn.Dropout(0.1)
-        self.dropout3 = nn.Dropout(0.1)
+#        self.dropout1 = nn.Dropout(0.1)
+#        self.dropout2 = nn.Dropout(0.1)
+#        self.dropout3 = nn.Dropout(0.1)
     # forward method
     def forward(self, x):
         x = self.fc1(x)
