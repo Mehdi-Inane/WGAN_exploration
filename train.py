@@ -104,7 +104,7 @@ if __name__ == '__main__':
     criterion = nn.BCELoss()
 
     # define optimizers
-    CP = False
+    CP = True
     if CP:
         G_optimizer = optim.RMSprop(G.parameters(), lr=5e-5)
         D_optimizer = optim.RMSprop(D.parameters(), lr=5e-5)
