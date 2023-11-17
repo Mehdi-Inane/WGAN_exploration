@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt
 
 
 def compute_norm_product(layer):
-    u, s, v = torch.svd(layer)
+    new_layer = layer.view(layer.shape[0],-1)
+    u, s, v = torch.svd(new_layer)
 # Spectral norm is the maximum singular value
     spectral_norm = s[0].item()
     return spectral_norm
@@ -96,7 +97,8 @@ if __name__ == '__main__':
     mnist_dim = 784
     G = torch.nn.DataParallel(Generator(g_output_dim = mnist_dim)).cuda()
     D = torch.nn.DataParallel(Discriminator(mnist_dim)).cuda()
-
+    lip = compute_lipschitz(D)
+    print("initial lipschiz value for D",lip)
 
     # model = DataParallel(model).cuda()
     print('Model loaded.')
@@ -126,7 +128,7 @@ if __name__ == '__main__':
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
-    lipschitz_values = []
+    lipschitz_values = [lip]
     for epoch in range(1, n_epoch+1): 
         dl= 0
         gl= 0
@@ -194,9 +196,9 @@ if __name__ == '__main__':
 
 
     fig, ax = plt.subplots()
-    ax.plot(D_loss, marker='o', linestyle='-')
+    ax.plot(lipschitz_values, marker='o', linestyle='-')
     ax.set_xlabel('Epoch')
-    ax.set_ylabel('Lipschitz approximation')
+    ax.set_ylabel('Spectral norm of D')
     ax.set_title('Bounds on the discriminator lipschitz constant')
     plt.savefig('lipschitz.png')
     print('Training done')

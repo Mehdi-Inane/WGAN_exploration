@@ -3,6 +3,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+
+def compute_norm_product(layer):
+    u, s, v = torch.svd(layer)
+# Spectral norm is the maximum singular value
+    spectral_norm = s[0].item()
+    return spectral_norm
+
 class Generator(nn.Module):
     def __init__(self, g_output_dim):
         super(Generator, self).__init__()       
@@ -28,7 +35,16 @@ class Discriminator(nn.Module):
         self.dropout1 = nn.Dropout(0.1)
         self.dropout2 = nn.Dropout(0.1)
         self.dropout3 = nn.Dropout(0.1)
-    # forward method
+        self.apply(self._weights_init)    
+
+
+
+    def _weights_init(self, m):
+        if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+            spectral_norm = compute_norm_product(m.weight.data)
+            m.weight.data /= spectral_norm
+
+# forward method
     def forward(self, x):
         x = self.fc1(x)
         x = x.view(-1, self.fc1.out_features)
