@@ -31,8 +31,8 @@ def D_train(x, G, D, D_optimizer, criterion):
     D_loss.backward()
     D_optimizer.step()
 
-    for p in D.parameters():
-        p.data.clamp_(-0.01, 0.01)
+    #for p in D.parameters():
+    #    p.data.clamp_(-0.01, 0.01)
         
     return  D_loss.data.item()
 
