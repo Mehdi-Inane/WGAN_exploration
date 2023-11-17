@@ -16,6 +16,21 @@ from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 
 
+
+
+def compute_norm_product(layer):
+    u, s, v = torch.svd(layer)
+# Spectral norm is the maximum singular value
+    spectral_norm = s[0].item()
+    return spectral_norm
+
+def compute_lipschitz(D):
+        norm_products = 1.0
+        for name,layer in D.named_parameters():
+            if 'weight' in name:
+                norm_products *= compute_norm_product(layer.data)
+        return norm_products
+
 def save_real_samples(train_loader):
     real_images_dir = 'data/MNIST_raw'
     os.makedirs(real_images_dir, exist_ok=True)
@@ -111,6 +126,7 @@ if __name__ == '__main__':
     z_fixed = torch.randn(1, 100)
     os.makedirs('samples_per_epoch', exist_ok=True)
     os.makedirs('samples_per_epoch_random', exist_ok=True)
+    lipschitz_values = []
     for epoch in range(1, n_epoch+1): 
         dl= 0
         gl= 0
@@ -125,7 +141,9 @@ if __name__ == '__main__':
             G_loss.append(gl/bpe)
             print(f'Epoch {epoch}, G Loss {gl/bpe:.2f}, D Loss {dl/bpe:.2f}')
         D_loss.append(dl/bpe)
-
+        lip = compute_lipschitz(D)
+        print("lip value of D",lip)
+        lipschitz_values.append(lip)
         if epoch % n_generator == 0:
             z_r = torch.randn(1, 100) 
             x_r = G(z_r)
@@ -171,7 +189,16 @@ if __name__ == '__main__':
     ax.set_ylabel('Discriminator Loss')
     ax.set_title('Discriminator Loss over training')
     plt.savefig('disloss.png')
+    
 
+
+
+    fig, ax = plt.subplots()
+    ax.plot(D_loss, marker='o', linestyle='-')
+    ax.set_xlabel('Epoch')
+    ax.set_ylabel('Lipschitz approximation')
+    ax.set_title('Bounds on the discriminator lipschitz constant')
+    plt.savefig('lipschitz.png')
     print('Training done')
 
         

@@ -22,7 +22,6 @@ def D_train(x, G, D, D_optimizer, criterion):
     z = torch.randn(x.shape[0], 100).cuda()
     x_fake, y_fake = G(z), torch.zeros(x.shape[0], 1).cuda()
     D_output =  D(x_fake)
-    
     #D_fake_loss = criterion(D_output, y_fake)
     D_fake_loss = torch.mean(D_output)
     D_fake_score = D_output
